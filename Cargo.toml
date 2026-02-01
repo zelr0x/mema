@@ -1,0 +1,10 @@
+[package]
+name = "mema"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+
+[dev-dependencies]
+ctor = "0.6.3"
+
