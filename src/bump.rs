@@ -2,7 +2,7 @@ use core::alloc::{GlobalAlloc, Layout};
 use core::cell::UnsafeCell;
 use core::ptr::{NonNull, null_mut};
 use core::sync::atomic::{AtomicPtr, AtomicU8, Ordering};
-use crate::util::align_up_ptr;
+use crate::util::align::{Align64, align_up_ptr};
 #[cfg(any(unix, windows))]
 use crate::os;
 
@@ -15,13 +15,11 @@ const UNINIT: u8 = 0;
 const INIT_IN_PROGRESS: u8 = 1;
 const INIT_DONE: u8 = 2;
 
-// TODO: add an option to use std::Mutex instead of atomics
-// for heavy-contention scenarios when std is available?
 pub struct BumpAllocator {
     start:   UnsafeCell<*mut u8>,
     end:     UnsafeCell<*mut u8>,
-    current: AtomicPtr<u8>,
-    init_flag: AtomicU8,
+    current: Align64<AtomicPtr<u8>>,
+    init_flag: Align64<AtomicU8>,
 }
 
 impl BumpAllocator {
@@ -30,8 +28,8 @@ impl BumpAllocator {
         Self {
             start: UnsafeCell::new(null_mut()),
             end: UnsafeCell::new(null_mut()),
-            current: AtomicPtr::new(null_mut()),
-            init_flag: AtomicU8::new(UNINIT),
+            current: Align64::new(AtomicPtr::new(null_mut())),
+            init_flag: Align64::new(AtomicU8::new(UNINIT)),
         }
     }
 

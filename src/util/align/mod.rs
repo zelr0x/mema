@@ -1,5 +1,9 @@
 #![allow(dead_code)]  // It's fine for the time being.
 
+pub(crate) mod alignments;
+
+pub(crate) use alignments::*;
+
 #[inline(always)]
 pub(crate) const fn align_up(addr: usize, align: usize) -> usize {
     debug_assert!(align.is_power_of_two());
@@ -23,4 +27,3 @@ pub(crate) fn checked_align_up_ptr(ptr: *mut u8, align: usize) -> *mut u8 {
     checked_align_up(ptr as usize, align)
         .map_or(core::ptr::null_mut(), |x| x as *mut u8)
 }
-
